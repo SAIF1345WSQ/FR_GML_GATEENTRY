@@ -1,0 +1,130 @@
+<div class="main-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="!isSidebarOpen">
+
+    <div class="sidebar-logo">
+      <span class="logo-text" *ngIf="isSidebarOpen">
+        GATE MANAGEMENT
+      </span>
+      <span class="logo-small" *ngIf="!isSidebarOpen">
+        GM
+      </span>
+    </div>
+
+    <div class="menu-section">
+
+      <div class="menu-heading" *ngIf="isSidebarOpen">
+        MAIN MENU
+      </div>
+
+      <a routerLink="/dashboard"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">▦</span>
+        <span *ngIf="isSidebarOpen">Dashboard</span>
+      </a>
+
+      <div class="menu-heading" *ngIf="isSidebarOpen">
+        MASTER
+      </div>
+
+      <a routerLink="/employee"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">♙</span>
+        <span *ngIf="isSidebarOpen">Employee Master</span>
+      </a>
+
+      <div class="menu-heading" *ngIf="isSidebarOpen">
+        GATE MANAGEMENT
+      </div>
+
+      <!-- <a routerLink="/visitor"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">♧</span>
+        <span *ngIf="isSidebarOpen">Visitor Management</span>
+      </a> -->
+
+      <a routerLink="/visitorGateEntry"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">▤</span>
+        <span *ngIf="isSidebarOpen">Visitor Gate Entry</span>
+      </a>
+
+      <a routerLink="/empMovmnt"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">⇄</span>
+        <span *ngIf="isSidebarOpen">Employee Movement</span>
+      </a>
+
+      <div class="menu-heading" *ngIf="isSidebarOpen">
+        MATERIAL MANAGEMENT
+      </div>
+
+      <a routerLink="/materialInward"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">↓</span>
+        <span *ngIf="isSidebarOpen">Material Inward</span>
+      </a>
+
+      <a routerLink="/materialOutward"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">↑</span>
+        <span *ngIf="isSidebarOpen">Material Outward</span>
+      </a>
+
+      <div class="menu-heading" *ngIf="isSidebarOpen">
+        COURIER MANAGEMENT
+      </div>
+
+      <a routerLink="/inward-courier"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">↓</span>
+        <span *ngIf="isSidebarOpen">Inward Courier</span>
+      </a>
+
+      <a routerLink="/outward-courier"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="menu-icon">↑</span>
+        <span *ngIf="isSidebarOpen">Outward Courier</span>
+      </a>
+
+    </div>
+
+  </aside>
+
+  <!-- Main Content -->
+  <div class="content-area">
+
+    <!-- Header -->
+    <header class="top-header">
+
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        ☰
+      </button>
+
+      <div class="header-right">
+        <span class="user-name">Admin</span>
+        <button class="logout-btn" (click)="logout()">
+          Logout
+        </button>
+      </div>
+
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+</div>

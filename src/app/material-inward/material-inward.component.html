@@ -1,0 +1,396 @@
+
+<div class="page-container">
+
+  <div class="page-header">
+    <div>
+      <h2>Material Inward</h2>
+      <p>Material Inward Register</p>
+    </div>
+  </div>
+
+  <!-- Material Inward Form -->
+  <div class="form-card">
+
+    <h3>Material Inward Details</h3>
+    <form #inwardForm="ngForm" (ngSubmit)="saveMaterialInward()">
+
+      <div class="form-grid">
+        <!-- TRANSACTION TYPE -->
+        <div class="form-group">
+          <label>TRANSACTION TYPE *</label>
+          <select
+            name="transactionType"
+            [(ngModel)]="materialInward.transactionType"
+            (ngModelChange)="onTransactionTypeChange()"
+            required>
+            <option
+              *ngFor="let type of transactionTypeOptions"
+              [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        <!-- DOC TYPE -->
+        <div class="form-group">
+          <label>DOC TYPE *</label>
+          <select
+            name="docType"
+            [(ngModel)]="materialInward.docType"
+            required>
+            <option value="">Select Doc Type</option>
+            <option *ngFor="let type of docTypeOptions" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        <!-- DATE -->
+        <div class="form-group">
+          <label>DATE *</label>
+          <input
+            type="date"
+            name="date"
+            [(ngModel)]="materialInward.date"
+            required>
+        </div>
+
+        <!-- PARTY NAME -->
+        <div class="form-group">
+          <label>PARTY NAME *</label>
+            <select
+            name="docType"
+            [(ngModel)]="materialInward.partyName" (change)="GetDocNum(materialInward.partyName)"
+            required>
+            <option value="">Select Doc Type</option>
+            <option *ngFor="let type of Supplier" [value]="type.CardCode"  >
+              {{ type.CardName }}
+            </option>
+          </select>
+        </div>
+        <!-- SENDER ADDRESS -->
+        <div class="form-group">
+          <label>SENDER ADDRESS</label>
+          <textarea
+            name="senderAddress"
+            [(ngModel)]="materialInward.senderAddress"
+            placeholder="Enter sender address"
+            rows="2">
+          </textarea>
+        </div>
+
+        <!-- CHALLAN / INVOICE NO -->
+        <div class="form-group">
+          <label>CHALLAN / INVOICE NO</label>
+          <input
+            type="text"
+            name="challanInvoiceNo"
+            [(ngModel)]="materialInward.challanInvoiceNo"
+            placeholder="Enter challan / invoice number">
+        </div>
+
+        <!-- CHALLAN / INVOICE DATE -->
+        <div class="form-group">
+          <label>CHALLAN / INVOICE DATE</label>
+          <input
+            type="date"
+            name="challanInvoiceDate"
+            [(ngModel)]="materialInward.challanInvoiceDate">
+        </div>
+
+        <!-- DELIVERY PERSON -->
+        <div class="form-group">
+          <label>DELIVERY PERSON NAME</label>
+          <input
+            type="text"
+            name="deliveryPersonName"
+            [(ngModel)]="materialInward.deliveryPersonName"
+            placeholder="Enter delivery person name">
+        </div>
+
+        <!-- VEHICLE NO -->
+        <div class="form-group">
+          <label>VEHICLE NO.</label>
+          <input
+            type="text"
+            name="vehicleNo"
+            [(ngModel)]="materialInward.vehicleNo"
+            placeholder="Enter vehicle number">
+        </div>
+
+        <!-- MATERIAL DETAILS -->
+        <div class="form-group">
+          <label>MATERIAL DETAILS</label>
+          <textarea
+            name="materialDetails"
+            [(ngModel)]="materialInward.materialDetails"
+            placeholder="Enter material details"
+            rows="2">
+          </textarea>
+        </div>
+        <!-- QUANTITY -->
+        <div class="form-group">
+          <label>QUANTITY</label>
+          <input
+            type="text"
+            name="quantity"
+            [(ngModel)]="materialInward.quantity"
+            placeholder="Enter quantity">
+        </div>
+        <!-- QUALITY CONDITION -->
+        <div class="form-group">
+          <label>QUALITY / CONDITION</label>
+          <input
+            type="text"
+            name="qualityCondition"
+            [(ngModel)]="materialInward.qualityCondition"
+            placeholder="Enter quality / condition">
+        </div>
+        <!-- SECURITY PERSON -->
+        <div class="form-group">
+          <label>SECURITY PERSON NAME *</label>
+          <input
+            type="text"
+            name="securityPersonName"
+            [(ngModel)]="materialInward.securityPersonName"
+            placeholder="Enter security person name"
+            required>
+        </div>
+        <!-- RECEIVER NAME -->
+        <div class="form-group">
+          <label>RECEIVER NAME</label>
+          <input
+            type="text"
+            name="receiverName"
+            [(ngModel)]="materialInward.receiverName"
+            placeholder="Enter receiver name">
+        </div>
+        <!-- INVOICE AMOUNT -->
+        <div class="form-group">
+          <label>INVOICE AMOUNT</label>
+          <input
+            type="number"
+            name="invoiceAmount"
+            [(ngModel)]="materialInward.invoiceAmount"
+            placeholder="Enter invoice amount"
+            min="0">
+        </div>
+
+        <!-- REMARKS -->
+        <div class="form-group">
+          <label>REMARKS</label>
+          <textarea
+            name="remarks"
+            [(ngModel)]="materialInward.remarks"
+            placeholder="Enter remarks"
+            rows="2">
+          </textarea>
+        </div>
+        <!-- PO NO -->
+        <div class="form-group">
+          <label>
+            PO NO.
+            <span *ngIf="materialInward.transactionType === 'With PO'">*</span>
+          </label>
+          <input
+            type="text"
+            name="poNo"
+            [(ngModel)]="materialInward.poNo"
+            [disabled]="materialInward.transactionType === 'Without PO'"
+            [required]="materialInward.transactionType === 'With PO'"
+            placeholder="Enter PO number">
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          <span>Save Material Inward</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+
+    </form>
+  </div>
+ <!-- PO Select -->
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>SR NO</th>
+          <th>Doc No</th>
+          <th>Doc Date</th>
+          <th>Doc Total</th>
+          <th>Select</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let x of filteredDocList; let i = index;">
+          <td>{{ i + 1 }}</td>
+          <td>{{ x.DocNum }}</td>
+          <td>{{ x.DocDate }}</td>
+          <td>{{ x.DocTotal }}</td>
+          <td>
+            <input type="checkbox"
+                   class="form-check-input"
+             
+                   (change)="selectDoc(x)" />
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredDocList.length === 0">
+          <td colspan="5" class="no-records">No documents found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- item Details  -->
+  <div class="table-card">
+    <div class="table-header">
+      <div>
+        <h3>Item Details</h3>
+        <p>Total Records: {{ materialInwardList.length }}</p>
+      </div>
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchText"
+        placeholder="Search records...">
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Doc Num</th>
+            <th>Item Code </th>
+            <th>Item Name</th>
+            <th>OpenQty</th>
+            <th>Balance Qty</th>
+            <th>Reciving Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of FilteredItemRows">
+            <td><input type="checkbox" class="form-check-input"  /></td>
+            <td>{{ item.DocNum }}</td>
+            <td>
+              <span class="transaction-badge">
+                {{ item.ItemCode }}
+              </span>
+            </td>
+            <td>{{ item.ItemName }}</td>
+            <td>{{ item.OpenQty }}</td>
+            <td>{{ item.BalanceQty }}</td>
+            <td>{{ item.ReceivingQty }}</td>
+          </tr>
+          <tr *ngIf="filteredRecords.length === 0">
+            <td colspan="19" class="no-records">
+              No material inward records found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+
+
+  <!-- Material Inward Register -->
+  <div class="table-card">
+    <div class="table-header">
+      <div>
+        <h3>Material Inward Register</h3>
+        <p>Total Records: {{ materialInwardList.length }}</p>
+      </div>
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchText"
+        placeholder="Search records...">
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>SR NO</th>
+            <th>TRANSACTION TYPE</th>
+            <th>DOC TYPE</th>
+            <th>DATE</th>
+            <th>PARTY NAME</th>
+            <th>SENDER ADDRESS</th>
+            <th>CHALLAN / INVOICE NO</th>
+            <th>CHALLAN / INVOICE DATE</th>
+            <th>DELIVERY PERSON NAME</th>
+            <th>VEHICLE NO.</th>
+            <th>MATERIAL DETAILS</th>
+            <th>QUANTITY</th>
+            <th>QUALITY / CONDITION</th>
+            <th>SECURITY PERSON NAME</th>
+            <th>RECEIVER NAME</th>
+            <th>INVOICE AMOUNT</th>
+            <th>REMARKS</th>
+            <th>PO NO.</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredRecords">
+            <td>{{ item.srNo }}</td>
+            <td>
+              <span class="transaction-badge">
+                {{ item.transactionType }}
+              </span>
+            </td>
+            <td>{{ item.docType }}</td>
+            <td>{{ item.date | date:'dd-MM-yyyy' }}</td>
+            <td>{{ item.partyName }}</td>
+            <td>{{ item.senderAddress }}</td>
+            <td>{{ item.challanInvoiceNo }}</td>
+            <td>
+              {{ item.challanInvoiceDate
+                ? (item.challanInvoiceDate | date:'dd-MM-yyyy')
+                : '-' }}
+            </td>
+            <td>{{ item.deliveryPersonName }}</td>
+            <td>{{ item.vehicleNo }}</td>
+            <td>{{ item.materialDetails }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.qualityCondition }}</td>
+            <td>{{ item.securityPersonName }}</td>
+            <td>{{ item.receiverName }}</td>
+            <td>{{ item.invoiceAmount }}</td>
+            <td>{{ item.remarks }}</td>
+            <td>{{ item.poNo || '-' }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn-delete"
+                (click)="deleteRecord(item)">
+                Delete
+              </button>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredRecords.length === 0">
+            <td colspan="19" class="no-records">
+              No material inward records found.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

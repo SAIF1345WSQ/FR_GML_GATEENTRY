@@ -1,0 +1,235 @@
+<div class="page-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h2>Employee Movement</h2>
+            <p>Employee In / Out Movement Register</p>
+        </div>
+    </div>
+
+    <!-- Employee Movement Form -->
+    <div class="form-card">
+
+        <form #movementForm="ngForm" (ngSubmit)="saveMovement()">
+
+            <div class="form-grid">
+
+                <!-- Employee Type -->
+                <div class="form-group">
+                    <label>Employee Type *</label>
+
+                    <select name="empType" [(ngModel)]="movement.empType" required>
+                        <option *ngFor="let type of empTypeOptions" [value]="type">
+                            {{ type }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Employee ID -->
+                <div class="form-group">
+                    <label>Employee ID No. *</label>
+
+                    <input type="text" name="empIdNo" [(ngModel)]="movement.empIdNo" placeholder="Enter employee ID"
+                        required />
+                </div>
+
+                <!-- Contract Name -->
+                <div class="form-group">
+                    <label>Contract Name</label>
+
+                    <input type="text" name="contractName" [(ngModel)]="movement.contractName"
+                        placeholder="Enter contractor name" [required]="movement.empType === 'CONTRACT'" />
+                </div>
+
+                <!-- Employee Name -->
+                <div class="form-group">
+                    <label>Employee Name *</label>
+
+                    <input type="text" name="name" [(ngModel)]="movement.name" placeholder="Enter employee name"
+                        required />
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label>Department</label>
+
+                    <input type="text" name="department" [(ngModel)]="movement.department"
+                        placeholder="Enter department" />
+                </div>
+
+                <!-- HOD Approval -->
+                <div class="form-group">
+                    <label>Approved By HOD</label>
+
+                    <input type="text" name="approvedByHod" [(ngModel)]="movement.approvedByHod"
+                        placeholder="Enter HOD name / approval" />
+                </div>
+
+                <!-- HR Approval -->
+                <div class="form-group">
+                    <label>Approved By HR</label>
+
+                    <input type="text" name="approvedByHr" [(ngModel)]="movement.approvedByHr"
+                        placeholder="Enter HR name / approval" />
+                </div>
+
+                <!-- From Plant -->
+                <div class="form-group">
+                    <label>From Plant *</label>
+
+                    <input type="text" name="fromPlant" [(ngModel)]="movement.fromPlant" placeholder="Enter plant name"
+                        required />
+                </div>
+
+                <!-- Destination -->
+                <div class="form-group">
+                    <label>Destination *</label>
+
+                    <input type="text" name="destination" [(ngModel)]="movement.destination"
+                        placeholder="Enter destination" required />
+                </div>
+
+                <!-- Out Time -->
+                <div class="form-group">
+                    <label>Out Time</label>
+
+                    <input type="time" name="outTime" [(ngModel)]="movement.outTime" />
+                </div>
+
+                <!-- In Time -->
+                <div class="form-group">
+                    <label>In Time</label>
+
+                    <input type="time" name="inTime" [(ngModel)]="movement.inTime" />
+                </div>
+
+                <!-- Security Supervisor -->
+                <div class="form-group">
+                    <label>Security Supervisor Name *</label>
+
+                    <input type="text" name="securitySupervisorName" [(ngModel)]="movement.securitySupervisorName"
+                        placeholder="Enter security supervisor name" required />
+                </div>
+
+                <!-- Purpose -->
+                <div class="form-group">
+                    <label>Purpose *</label>
+
+                    <select name="purpose" [(ngModel)]="movement.purpose" required>
+                        <option *ngFor="let purpose of purposeOptions" [value]="purpose">
+                            {{ purpose }}
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="form-actions">
+
+                <button type="button" class="btn-reset" (click)="resetForm()">
+                    Reset
+                </button>
+
+                <button type="submit" class="btn-save" [disabled]="movementForm.invalid">
+                    Save Movement
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- Movement Register -->
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <div>
+                <h3>Employee Movement Register</h3>
+                <p>View and manage employee movement records.</p>
+            </div>
+
+            <input type="text" [(ngModel)]="searchText" placeholder="Search employee..." />
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>SR NO</th>
+                        <th>EMP TYPE</th>
+                        <th>EMP ID NO</th>
+                        <th>CONTRACT NAME</th>
+                        <th>NAME</th>
+                        <th>DEPTT</th>
+                        <th>APPROVED BY HOD</th>
+                        <th>APPROVED BY HR</th>
+                        <th>FROM PLANT</th>
+                        <th>DESTINATION</th>
+                        <th>OUT</th>
+                        <th>IN</th>
+                        <th>SECURITY SUPERVISOR</th>
+                        <th>PURPOSE</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let item of filteredMovements">
+
+                        <td>{{ item.srNo }}</td>
+                        <td>{{ item.empType }}</td>
+                        <td>{{ item.empIdNo }}</td>
+                        <td>{{ item.contractName || '-' }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.department || '-' }}</td>
+                        <td>{{ item.approvedByHod || '-' }}</td>
+                        <td>{{ item.approvedByHr || '-' }}</td>
+                        <td>{{ item.fromPlant }}</td>
+                        <td>{{ item.destination }}</td>
+                        <td>{{ item.outTime || '-' }}</td>
+                        <td>{{ item.inTime || '-' }}</td>
+                        <td>{{ item.securitySupervisorName }}</td>
+                        <td>{{ item.purpose }}</td>
+
+                        <td class="action-cell">
+
+                            <button type="button" class="btn-small btn-out" (click)="markOut(item)">
+                                OUT
+                            </button>
+
+                            <button type="button" class="btn-small btn-in" (click)="markIn(item)">
+                                IN
+                            </button>
+
+                            <button type="button" class="btn-small btn-delete" (click)="deleteMovement(item)">
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    <tr *ngIf="filteredMovements.length === 0">
+                        <td colspan="15" class="no-data">
+                            No employee movement records found.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

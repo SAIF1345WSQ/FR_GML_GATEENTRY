@@ -1,0 +1,185 @@
+<div class="employee-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h2>Employee Master</h2>
+      <p>Manage employee and contractor information</p>
+    </div>
+
+    <button class="add-btn" (click)="openAddForm()">
+      + Add Employee
+    </button>
+  </div>
+
+  <!-- Employee List -->
+  <div class="employee-card">
+
+    <div class="table-header">
+      <h3>Employee List</h3>
+
+      <input
+        type="text"
+        placeholder="Search employees..."
+        [(ngModel)]="searchText">
+    </div>
+
+    <div class="table-responsive">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sr. No.</th>
+            <th>Employee Code</th>
+            <th>Employee Name</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Unit Name</th>
+            <th>Company/Contractor Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let emp of filteredEmployees; let i = index">
+
+            <td>{{ i + 1 }}</td>
+            <td>{{ emp.employeeCode }}</td>
+            <td class="employee-name">{{ emp.employeeName }}</td>
+            <td>{{ emp.department }}</td>
+            <td>{{ emp.designation }}</td>
+            <td>{{ emp.unitName }}</td>
+            <td>{{ emp.companyName }}</td>
+
+            <td>
+              <div class="action-buttons">
+                <button class="edit-btn"
+                        (click)="openEditForm(emp)">
+                  Edit
+                </button>
+
+                <button class="delete-btn"
+                        (click)="deleteEmployee(emp.id)">
+                  Delete
+                </button>
+              </div>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredEmployees.length === 0">
+            <td colspan="8" class="no-data">
+              No employees found
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div class="table-footer">
+      Total Employees: {{ filteredEmployees.length }}
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Add/Edit Employee Modal -->
+
+<div class="modal-overlay" *ngIf="showForm">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h3>{{ isEdit ? 'Edit Employee' : 'Add Employee' }}</h3>
+
+      <button class="close-btn" (click)="closeForm()">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="saveEmployee()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Employee Code <span>*</span></label>
+          <input
+            type="text"
+            name="employeeCode"
+            [(ngModel)]="employee.employeeCode"
+            placeholder="Enter employee code"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>Employee Name <span>*</span></label>
+          <input
+            type="text"
+            name="employeeName"
+            [(ngModel)]="employee.employeeName"
+            placeholder="Enter employee name"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>Department <span>*</span></label>
+          <input
+            type="text"
+            name="department"
+            [(ngModel)]="employee.department"
+            placeholder="Enter department"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>Designation</label>
+          <input
+            type="text"
+            name="designation"
+            [(ngModel)]="employee.designation"
+            placeholder="Enter designation">
+        </div>
+
+        <div class="form-group">
+          <label>Unit Name</label>
+          <input
+            type="text"
+            name="unitName"
+            [(ngModel)]="employee.unitName"
+            placeholder="Enter unit name">
+        </div>
+
+        <div class="form-group">
+          <label>Company/Contractor Name</label>
+          <input
+            type="text"
+            name="companyName"
+            [(ngModel)]="employee.companyName"
+            placeholder="Enter company/contractor name">
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="cancel-btn"
+                (click)="closeForm()">
+          Cancel
+        </button>
+
+        <button type="submit" class="save-btn">
+          {{ isEdit ? 'Update Employee' : 'Save Employee' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
