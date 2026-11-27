@@ -1,1 +1,434 @@
-<p>material-outward works!</p>
+<div class="page-container">
+    <div class="page-header">
+        <div class="page-header__title">
+            <h2>Material Outward :- {{ materialOutward.GateEntrySeries }}</h2>
+
+        </div>
+ <div class="header-actions  d-flex gap-1">
+       <button type="button" class="btn btn-warning"
+        *ngIf="Update"
+        (click)="BackToAddMode()">
+  <i class="bi bi-arrow-left"></i> Back to Add Mode
+</button>
+      <button type="button" class="btn btn-success" (click)="ViewGateIN()" data-bs-toggle="modal"
+        data-bs-target="#CompanyListModal">
+        <i class="bi bi-eye"></i> View
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="SaveGateOUT()">
+        <i class="bi bi-save"></i> Save
+      </button>
+    </div>
+    </div>
+<!--MODAL-->
+  <!-- MODAL -->
+<div class="modal fade" id="CompanyListModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable inward-modal">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Material Outward List</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <!-- Filter -->
+        <div class="inward-filter">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   placeholder="Search series, doc no, challan, card code, card name, date..."
+                   [(ngModel)]="searchTextModal" />
+            <button type="button" class="clear-btn" *ngIf="searchTextModal"
+                    (click)="searchTextModal = ''" title="Clear">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <span class="result-count">{{ filteredArray.length }} / {{ ViewArray?.length || 0 }}</span>
+        </div>
+
+        <!-- Table -->
+        <div class="inward-table-wrap">
+          <table class="inward-modal-table">
+            <thead>
+              <tr>
+                <th>Gate Entry Series</th>
+                <th>Doc Type</th>
+                <th>Doc No</th>
+                <th>Bill Date</th>
+                <th>Challan No</th>
+                <th>Card Code</th>
+                <th>Card Name</th>
+                <th class="action-col">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let it of filteredArray">
+                <td data-label="Gate Entry Series" class="series">{{ it.gateEntrySeries }}</td>
+
+                <td data-label="Doc Type">
+                  <span class="type-badge" [class.rgp]="it.docType === 'RGP'">{{ it.docType }}</span>
+                </td>
+
+                <td data-label="Doc No">{{ it.docNum }}</td>
+                <td data-label="Bill Date">{{ it.billDate | date:'dd/MM/yyyy' }}</td>
+                <td data-label="Challan No">{{ it.challanNo }}</td>
+                <td data-label="Card Code">{{ it.cardCode }}</td>
+                <td data-label="Card Name" class="card-name">{{ it.cardName }}</td>
+
+                <td data-label="Action" class="action-col">
+                  <button class="btn btn-primary btn-sm edit-btn"
+                          (click)="EditEntry(it.docEntry)"
+                          aria-label="Edit"
+                          title="Edit"
+                          data-bs-dismiss="modal">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredArray.length === 0">
+                <td colspan="8" class="empty-row">No data found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <div class="form-card">
+        <form #inwardForm="ngForm" (ngSubmit)="saveMaterialInward()">
+
+            <div class="form-grid">
+                <!-- TRANSACTION TYPE -->
+                <div class="form-group">
+                    <label>TRANSACTION TYPE <strong>*</strong></label>
+                    <select name="transactionType" [(ngModel)]="materialOutward.transactionType"
+                        (ngModelChange)="onTransactionTypeChange()" required>
+                        <option *ngFor="let type of transactionTypeOptions" [value]="type">
+                            {{ type }}
+                        </option>
+                    </select>
+                </div>
+                <!-- DOC TYPE -->
+                <div class="form-group">
+                    <label>DOC TYPE <strong>*</strong></label>
+                    <select name="docType" [(ngModel)]="materialOutward.docType" (ngModelChange)="GetSupplier()" required>
+                        <option value="" selected>Select</option>
+                        <option *ngFor="let type of docTypeOptions" [value]="type.key">
+                            {{ type.value }}
+                        </option>
+                    </select>
+                </div>
+                <!-- DATE -->
+                <div class="form-group">
+                    <label>DATE <strong>*</strong></label>
+                    <input type="date" name="date" [(ngModel)]="materialOutward.date" required>
+                </div>
+                <!-- PARTY NAME -->
+                <div class="form-group">
+                    <label>PARTY NAME </label>
+                    <div class="search-dropdown"
+            [ngClass]="{'open':shown && list !== undefined && list?.length !== 0,'small':size=='small'}">
+            <div class="search-dropdown__btn" (click)="show()"><span>{{value | titlecase}}</span></div>
+            <div class="search-dropdown__dropdown">
+              <input class="search-dropdown__dropdown__search" type="text" placeholder="Search"
+                [(ngModel)]="materialOutward.partyName" (keyup)="search($event)" #input />
+              <div class="search-dropdown__dropdown__scroller">
+                <div class="search-dropdown__dropdown__item" *ngFor="let item of list" (click)="select(item)">
+                  <!-- <div class="search-dropdown__dropdown__item__img"
+          [style.background-image]="'url(data:image/jpg;base64,'+item[_img]+')'"></div> -->
+                  {{item[_label]}} - {{item[_label2]}}
+                </div>
+              </div>
+            </div>
+          </div>
+                </div>
+                <!-- Doc NO -->
+                <div class="form-group">
+                    <label>
+                       Doc No
+                        <span *ngIf="materialOutward.transactionType === 'With PO'"><strong>*</strong></span>
+                    </label>
+                    <div class="position-relative expend-form">
+                        <select class="form-control" name="poNo" [(ngModel)]="materialOutward.poNo"
+              [disabled]="materialOutward.transactionType === 'Without PO'"
+              [required]="materialOutward.transactionType === 'With PO'" (change)="selectPo(materialOutward.poNo)">
+              <option value="">Select PO Number</option>
+              <option *ngFor="let po of poSuggestions" [value]="po.DocEntry">
+                {{ po.DocNum }}
+              </option>
+            </select>
+                    </div>
+                </div>
+                <!-- SENDER ADDRESS -->
+                <div class="form-group">
+                    <label>SENDER ADDRESS</label>
+                    <textarea name="senderAddress" [(ngModel)]="materialOutward.senderAddress"
+                        placeholder="Enter sender address" rows="1">
+          </textarea>
+                </div>
+
+                <!-- CHALLAN / INVOICE NO -->
+                <div class="form-group">
+                    <label>CHALLAN / INVOICE NO</label>
+                    <input type="text" name="challanInvoiceNo" [(ngModel)]="materialOutward.challanInvoiceNo"
+                        placeholder="Enter challan / invoice number">
+                </div>
+                <!-- CHALLAN / INVOICE DATE -->
+                <div class="form-group">
+                    <label>CHALLAN / INVOICE DATE</label>
+                    <input type="date" name="challanInvoiceDate" [(ngModel)]="materialOutward.challanInvoiceDate">
+                </div>
+                <!-- DELIVERY PERSON -->
+                <div class="form-group">
+                    <label>DELIVERY PERSON NAME</label>
+                    <input type="text" name="deliveryPersonName" [(ngModel)]="materialOutward.deliveryPersonName"
+                        placeholder="Enter delivery person name">
+                </div>
+                <!-- VEHICLE NO -->
+                <div class="form-group">
+                    <label>VEHICLE NO.<strong>*</strong></label>
+                    <input type="text" name="vehicleNo" [(ngModel)]="materialOutward.vehicleNo"
+                        placeholder="Enter vehicle number">
+                </div>
+                <!-- MATERIAL DETAILS -->
+                <!-- <div class="form-group">
+          <label>MATERIAL DETAILS</label>
+          <textarea name="materialDetails" [(ngModel)]="materialInward.materialDetails"
+            placeholder="Enter material details" rows="2">
+          </textarea>
+        </div> -->
+                <!-- QUANTITY -->
+                <!-- <div class="form-group">
+          <label>QUANTITY</label>
+          <input type="text" name="quantity" [(ngModel)]="materialInward.quantity" placeholder="Enter quantity">
+        </div> -->
+                <!-- QUALITY CONDITION -->
+                <div class="form-group">
+                    <label>QUALITY / CONDITION</label>
+                    <input type="text" name="qualityCondition" [(ngModel)]="materialOutward.qualityCondition"
+                        placeholder="Enter quality / condition">
+                </div>
+                <!-- SECURITY PERSON -->
+                <div class="form-group">
+                    <label>SECURITY PERSON NAME <strong>*</strong></label>
+                    <input type="text" name="securityPersonName" [(ngModel)]="materialOutward.securityPersonName"
+                        placeholder="Enter security person name" required>
+                </div>
+                <!-- RECEIVER NAME -->
+                <div class="form-group">
+                    <label>RECEIVER NAME</label>
+                    <input type="text" name="receiverName" [(ngModel)]="materialOutward.receiverName"
+                        placeholder="Enter receiver name">
+                </div>
+                <!-- INVOICE AMOUNT -->
+                <div class="form-group">
+                    <label>INVOICE AMOUNT</label>
+                    <input type="number" name="invoiceAmount" [(ngModel)]="materialOutward.invoiceAmount"
+                        placeholder="Enter invoice amount" min="0">
+                </div>
+                <!-- REMARKS -->
+                <div class="form-group">
+                    <label>REMARKS</label>
+                    <textarea name="remarks" [(ngModel)]="materialOutward.remarks" placeholder="Enter remarks" rows="2">
+          </textarea>
+                </div>
+                
+            </div>
+            <!-- <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          <span>Save Material Inward</span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="resetForm()">
+          Reset
+        </button>
+      </div> -->
+        </form>
+    </div>
+        
+  <div class="table-card">
+     <div class="table-header">
+      <div>
+        <h3>Item Details</h3>
+        <p>
+            <span class="badge badge-total">Total: {{ FilteredItemRows.length }}</span>
+        </p>
+      </div>
+      <input type="text" class="search-input"  placeholder="Search records...">
+    </div>
+    <!-- FOR With PO TABLE -->
+     <div class="table-responsive" *ngIf="materialOutward.transactionType === 'With PO'">
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Doc Num</th>
+            <th>Item Code </th>
+            <th>Item Name</th>
+            <th>Wharehouse</th>
+            <th>Quantity</th>
+            <th>Balance Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of FilteredItemRows">
+            <td><input type="checkbox" class="form-check-input" [(ngModel)]="item.Selected"
+                (click)="SelectItem(item)" /></td>
+            <td>{{ item.PONumber }}</td>
+            <td>
+              <span class="transaction-badge">
+                {{ item.ItemCode }}
+              </span>
+            </td>
+            <td>{{ item.ItemName }}</td>
+            <td>{{ item.Wharehouse }}</td>
+            <td>{{ item.Quantity }}</td>
+            <td>{{ item.POBlanceQty }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+   <!-- FOR Without PO TABLE -->
+    <div class="table-responsive" *ngIf="materialOutward.transactionType === 'Without PO'">
+      <table >
+        <thead >
+          <tr>
+            <th class="col-no">#</th>
+            <th class="col-code">Item Code</th>
+            <th class="col-name">Item Name</th>
+            <th class="col-uom">UOM</th>
+            <th class="col-wh">Warehouse</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-remarks">Remarks</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Entry row -->
+          <tr class="table-primary">
+            <td>+</td>
+
+
+
+            <td class="item-cell">
+  <div class="search-select">
+    <input type="text"
+           placeholder="Search by code or name"
+           name="newItemCode"
+           [ngModel]="newItem.ItemCode"
+           [ngModelOptions]="{standalone: true}"
+           (ngModelChange)="filterItems($event)"
+           (focus)="openItemDropdown()"
+           (blur)="closeItemDropdown()"
+           autocomplete="off" />
+
+    <span class="arrow" (mousedown)="toggleItemDropdown($event)">▼</span>
+
+    <ul class="options" *ngIf="showItemDropdown">
+      <li *ngFor="let it of filteredItems" (mousedown)="selectItem(it)">
+        <strong>{{ it.itemCode }}</strong>
+        <span>{{ it.itemName }}</span>
+      </li>
+      <li *ngIf="filteredItems.length === 0" class="no-result">
+        No items found
+      </li>
+    </ul>
+  </div>
+</td>
+           
+            <!-- Item Name (auto-filled) -->
+            <td>
+              <input type="text" class="form-control form-control-sm" name="newItemName" [(ngModel)]="newItem.ItemName"
+                placeholder="Item Name" readonly />
+            </td>
+
+            <td>
+              <select class="form-control form-control-sm" name="newUOM" [(ngModel)]="newItem.UOM">
+                <option value="">Select UOM</option>
+                <option *ngFor="let u of Uom" [value]="u.uomName ">{{ u.uomName  }}</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-control form-control-sm" name="newWarehouse" [(ngModel)]="newItem.Warehouse">
+                <option value="">Select Warehouse</option>
+                <option *ngFor="let w of warehouse" [value]="w.whsName ">{{ w.whsName  }}</option>
+              </select>
+            </td>
+            <td><input type="number" class="form-control form-control-sm" name="newQty" [(ngModel)]="newItem.Quantity"
+                placeholder="Qty" min="0" step="any" /></td>
+            <td><input type="text" class="form-control form-control-sm" name="newRemarks" [(ngModel)]="newItem.Remarks"
+                placeholder="Remarks" /></td>
+            <td>
+              <button type="button" class="btn btn-sm btn-primary" (click)="addItem()">Add</button>
+              <button type="button" class="btn btn-sm btn-secondary ms-1" (click)="resetNewItem()">Clear</button>
+            </td>
+          </tr>
+
+          <!-- Saved rows -->
+          <tr *ngFor="let item of withoutPoItems; let i = index">
+            <td>{{ i + 1 }}</td>
+
+            <ng-container *ngIf="!item.isEditing">
+              <td><span class="badge bg-success transaction-badge">{{ item.ItemCode }}</span></td>
+              <td>{{ item.ItemName }}</td>
+              <td>{{ item.UOM }}</td>
+              <td>{{ item.Warehouse }}</td>
+              <td>{{ item.Quantity }}</td>
+              <td>{{ item.Remarks }}</td>
+              <td>
+                <!-- View mode -->
+                <button type="button" class="btn-edit" (click)="editItem(item)">Edit</button>
+                <button type="button" class="btn-delete" (click)="deleteItem(i)">Delete</button>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="item.isEditing">
+              <td><input type="text" class="form-control form-control-sm" name="itemCode{{i}}"
+                  [(ngModel)]="item.ItemCode" /></td>
+              <td><input type="text" class="form-control form-control-sm" name="itemName{{i}}"
+                  [(ngModel)]="item.ItemName" /></td>
+              <td>
+                <select class="form-control form-control-sm" name="uom{{i}}" [(ngModel)]="item.UOM">
+                  <option value="">Select UOM</option>
+                  <option *ngFor="let u of Uom" [value]="u.uomName ">{{ u.uomName  }}</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-control form-control-sm" name="warehouse{{i}}" [(ngModel)]="item.Warehouse">
+                  <option value="">Select Warehouse</option>
+                  <option *ngFor="let w of warehouse" [value]="w.whsName ">{{ w.whsName  }}</option>
+                </select>
+              </td>
+              <td><input type="number" class="form-control form-control-sm" name="qty{{i}}" [(ngModel)]="item.Quantity"
+                  min="0" step="any" /></td>
+              <td><input type="text" class="form-control form-control-sm" name="remarks{{i}}"
+                  [(ngModel)]="item.Remarks" /></td>
+              <td>
+                <!-- Edit mode -->
+                <button type="button" class="btn-update mr-1" (click)="updateItem(item)">Update</button>
+                <button type="button" class="btn-cancel" (click)="cancelEdit(item)">Cancel</button>
+              </td>
+            </ng-container>
+          </tr>
+          <tr *ngIf="withoutPoItems.length === 0">
+            <td colspan="8" class="text-center text-muted">No items added yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+</div>

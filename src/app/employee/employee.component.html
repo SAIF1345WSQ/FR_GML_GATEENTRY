@@ -12,77 +12,99 @@
     </button>
   </div>
 
-  <!-- Employee List -->
-  <div class="employee-card">
 
-    <div class="table-header">
+<!-- Employee List -->
+<div class="employee-card">
+
+  <div class="table-header">
+    <div class="title-wrap">
       <h3>Employee List</h3>
-
-      <input
-        type="text"
-        placeholder="Search employees..."
-        [(ngModel)]="searchText">
+      <span class="count-badge">{{ filteredEmployees.length }}</span>
     </div>
 
-    <div class="table-responsive">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Sr. No.</th>
-            <th>Employee Code</th>
-            <th>Employee Name</th>
-            <th>Department</th>
-            <th>Designation</th>
-            <th>Unit Name</th>
-            <th>Company/Contractor Name</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let emp of filteredEmployees; let i = index">
-
-            <td>{{ i + 1 }}</td>
-            <td>{{ emp.employeeCode }}</td>
-            <td class="employee-name">{{ emp.employeeName }}</td>
-            <td>{{ emp.department }}</td>
-            <td>{{ emp.designation }}</td>
-            <td>{{ emp.unitName }}</td>
-            <td>{{ emp.companyName }}</td>
-
-            <td>
-              <div class="action-buttons">
-                <button class="edit-btn"
-                        (click)="openEditForm(emp)">
-                  Edit
-                </button>
-
-                <button class="delete-btn"
-                        (click)="deleteEmployee(emp.id)">
-                  Delete
-                </button>
-              </div>
-            </td>
-
-          </tr>
-
-          <tr *ngIf="filteredEmployees.length === 0">
-            <td colspan="8" class="no-data">
-              No employees found
-            </td>
-          </tr>
-
-        </tbody>
-      </table>
-
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M21 21l-4.3-4.3"></path>
+      </svg>
+      <input type="text" placeholder="Search employees..." [(ngModel)]="searchText" (input)="applyFilter()">
     </div>
-
-    <div class="table-footer">
-      Total Employees: {{ filteredEmployees.length }}
-    </div>
-
   </div>
+
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-sr">#</th>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Unit</th>
+          <th>Company / Contractor</th>
+          <th class="col-action">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let emp of filteredEmployees; let i = index">
+
+          <td class="col-sr">{{ i + 1 }}</td>
+
+          <td>
+            <div class="emp-cell">
+              <div class="avatar" [ngClass]="'avatar-' + (i % 5)">
+                {{ getInitials(emp.employeeName) }}
+              </div>
+              <div class="emp-info">
+                <span class="employee-name">{{ cleanName(emp.employeeName) }}</span>
+                <span class="employee-code">{{ emp.employeeCode }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="badge" *ngIf="emp.department; else empty">{{ emp.department }}</span>
+          </td>
+
+          <td>{{ emp.designation || '—' }}</td>
+          <td>{{ emp.unitName || '—' }}</td>
+          <td>{{ emp.companyName || '—' }}</td>
+
+          <td class="col-action">
+            <div class="action-buttons">
+              <button class="icon-btn edit-btn" title="Edit" (click)="openEditForm(emp)">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                </svg>
+              </button>
+
+              <button class="icon-btn delete-btn" title="Delete" (click)="deleteEmployee(emp.id)">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18"></path>
+                  <path d="M8 6V4h8v2"></path>
+                  <path d="M19 6l-1 14H6L5 6"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="filteredEmployees.length === 0">
+          <td colspan="7" class="no-data">No employees found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    Showing <b>{{ filteredEmployees.length }}</b> of <b>{{ filteredEmployees.length }}</b> employees
+  </div>
+
+</div>
+
+<ng-template #empty><span class="muted">—</span></ng-template>
 
 </div>
 
@@ -107,68 +129,67 @@
 
         <div class="form-group">
           <label>Employee Code <span>*</span></label>
-          <input
-            type="text"
-            name="employeeCode"
-            [(ngModel)]="employee.employeeCode"
-            placeholder="Enter employee code"
+          <input type="text" name="employeeCode" [(ngModel)]="employee.employeeCode" placeholder="Enter employee code"
             required>
         </div>
 
+
+
+        <!-- First Name -->
         <div class="form-group">
-          <label>Employee Name <span>*</span></label>
-          <input
-            type="text"
-            name="employeeName"
-            [(ngModel)]="employee.employeeName"
-            placeholder="Enter employee name"
-            required>
+          <label>First Name <span>*</span></label>
+          <input type="text" name="firstName" [(ngModel)]="employee.firstName" placeholder="Enter first name" required>
+        </div>
+        <!-- Middle Name -->
+        <div class="form-group">
+          <label>Middle Name <span>*</span></label>
+          <input type="text" name="firstName" [(ngModel)]="employee.middleName" placeholder="Enter first name" required>
+        </div>
+        <!-- Last Name -->
+        <div class="form-group">
+          <label>Last Name <span>*</span></label>
+          <input type="text" name="lastName" [(ngModel)]="employee.lastName" placeholder="Enter last name" required>
         </div>
 
         <div class="form-group">
           <label>Department <span>*</span></label>
-          <input
-            type="text"
-            name="department"
-            [(ngModel)]="employee.department"
-            placeholder="Enter department"
-            required>
+          <select class="form-control" name="department" [(ngModel)]="employee.department" required>
+
+            <option value="" disabled>Select Department</option>
+
+            <option *ngFor="let dept of Department" [value]="dept.code">
+              {{ dept.name }}
+            </option>
+
+          </select>
         </div>
 
         <div class="form-group">
           <label>Designation</label>
-          <input
-            type="text"
-            name="designation"
-            [(ngModel)]="employee.designation"
-            placeholder="Enter designation">
+          <input type="text" name="designation" [(ngModel)]="employee.designation" placeholder="Enter designation">
         </div>
 
         <div class="form-group">
           <label>Unit Name</label>
-          <input
-            type="text"
-            name="unitName"
-            [(ngModel)]="employee.unitName"
-            placeholder="Enter unit name">
+          <select class="form-control" name="unitName" [(ngModel)]="employee.unitName">
+            <option value="" disabled>Select Unit</option>
+            <option value="1">Unit 1</option>
+            <option value="2">Unit 2</option>
+            <option value="3">Unit 3</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label>Company/Contractor Name</label>
-          <input
-            type="text"
-            name="companyName"
-            [(ngModel)]="employee.companyName"
-            placeholder="Enter company/contractor name">
+          <input type="text" name="companyName" [(ngModel)]="employee.companyName"
+            placeholder="Enter company/contractor name" >
         </div>
 
       </div>
 
       <div class="modal-footer">
 
-        <button type="button"
-                class="cancel-btn"
-                (click)="closeForm()">
+        <button type="button" class="cancel-btn" (click)="closeForm()">
           Cancel
         </button>
 
@@ -179,6 +200,7 @@
       </div>
 
     </form>
+
 
   </div>
 

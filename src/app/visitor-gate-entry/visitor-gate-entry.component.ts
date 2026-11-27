@@ -2,8 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { jsPDF } from 'jspdf';
+import { EmployeeService } from '../services/Employee/employee.service';
+import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 
 interface VisitorEntry {
+  docEntry?:number
   visitorId: string;
   date: string;
   companyName: string;
@@ -28,16 +32,19 @@ interface VisitorEntry {
   templateUrl: './visitor-gate-entry.component.html',
   styleUrls: ['./visitor-gate-entry.component.css']
 })
+
 export class VisitorGateEntryComponent {
 
   visitor: VisitorEntry = this.getEmptyVisitor();
-
+ filepath ='';
+  private EmployeeService = inject(EmployeeService);
   visitorList: VisitorEntry[] = [];
   currentPass: VisitorEntry | null = null;
-
+  Edit =false;
+  isExpanded = true;
   photoPreview = '';
   searchText = '';
-
+  Deparetmnet: any[] = [];
   idProofOptions = [
     'PAN Card',
     'Aadhar Card',
@@ -55,7 +62,60 @@ export class VisitorGateEntryComponent {
   constructor() {
     this.loadVisitors();
   }
-
+  ngOnInit() {
+    this.GetVistor();
+  }
+  GetVistor() {
+    this.EmployeeService.GetVistor().subscribe(
+      (data: any) => {
+        this.visitor.visitorId = data.vId;
+        this.Deparetmnet = data.departments;
+        this.visitorList = data.list;
+      },
+      (error: any) => {
+        console.error('Error fetching suppliers:', error);
+      }
+    );
+  }
+  saveVisitor(): void {
+    if (!this.visitor.visitorName || !this.visitor.mobileNo) {
+      alert('Visitor Name and Mobile No are required');
+      return;
+    }
+if(this.Edit == true){
+this.EmployeeService.UpdateVisitEmployee(this.visitor).subscribe({
+      next: (res) => {
+        if (res.success) {
+          alert('Saved');
+          window.location.reload();
+        } else {
+          alert(res.message || 'Not Saved');
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Request failed: ' + err.status);
+      }
+    });
+}
+else{
+this.EmployeeService.saveVisitor(this.visitor).subscribe({
+      next: (res) => {
+        if (res.success) {
+          alert('Saved');
+          window.location.reload();
+        } else {
+          alert(res.message || 'Not Saved');
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Request failed: ' + err.status);
+      }
+    });
+}
+    
+  }
   getEmptyVisitor(): VisitorEntry {
     return {
       visitorId: '',
@@ -155,7 +215,7 @@ export class VisitorGateEntryComponent {
     reader.readAsDataURL(file);
   }
 
-  async saveVisitor(): Promise<void> {
+  async saveVisitor1(): Promise<void> {
     if (
       !this.visitor.date ||
       !this.visitor.companyName.trim() ||
@@ -200,16 +260,35 @@ export class VisitorGateEntryComponent {
   }
 
   updateOutTime(v: VisitorEntry): void {
-    v.outTime = new Date().toTimeString().substring(0, 5);
+     v.outTime = new Date().toTimeString().substring(0, 5);
     this.saveToStorage();
+    this.EmployeeService.UpdateOut(v.visitorId,v.docEntry).subscribe({next: (res) => {
+        if (res.success) {
+      
+        } else {
+          alert(res.message || 'Not Saved');
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Request failed: ' + err.status);
+      }
+    });
 
     if (this.currentPass?.visitorId === v.visitorId) {
       this.currentPass = { ...v };
     }
   }
 
+EditVisit(v:VisitorEntry){
+  this.Edit = true;
+    this.visitor = { ...v };  
+}
+
   downloadExistingPass(v: VisitorEntry): void {
     this.currentPass = { ...v };
+    //this.DownloadPhotos(v.photo)
+    //v.photo = this.filepath ;
     this.downloadPassPdf(v);
   }
 
@@ -435,24 +514,25 @@ export class VisitorGateEntryComponent {
 
     // Visitor photo frame
     const photoX = 74;
-    const photoY = 42;
+    const photoY = 36;
     const photoW = 21;
     const photoH = 27;
 
     doc.setDrawColor(100, 115, 130);
     doc.setLineWidth(0.4);
     doc.roundedRect(photoX, photoY, photoW, photoH, 1, 1);
+const photo = await this.getPhotoData(v.photo);
 
-    if (v.photo) {
+    if (photo) {
       try {
         doc.addImage(
-          v.photo,
-          this.getImageFormat(v.photo),
-          photoX + 0.7,
-          photoY + 0.7,
-          photoW - 1.4,
-          photoH - 1.4
-        );
+      photo.data,
+      photo.format,
+      photoX + 0.7,
+      photoY + 0.7,
+      photoW - 1.4,
+      photoH - 1.4
+    );
       } catch {
         this.drawPhotoPlaceholder(
           doc,
@@ -525,7 +605,32 @@ export class VisitorGateEntryComponent {
       align: 'center'
     });
 
-        
+
     doc.save(`${v.visitorId}.pdf`);
   }
+  private blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+private async getPhotoData(path: string): Promise<{ data: string; format: 'PNG' | 'JPEG' } | null> {
+  if (!path) return null;
+  try {
+    const blob = await firstValueFrom(this.EmployeeService.Download(path));
+    const data = await this.blobToDataUrl(blob);
+    return { data, format: data.includes('image/png') ? 'PNG' : 'JPEG' };
+  } catch {
+    return null;
+  }
+}
+ 
+
+toggleExpand() {
+  this.isExpanded = !this.isExpanded;
+}
+
 }

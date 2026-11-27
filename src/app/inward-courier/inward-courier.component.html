@@ -1,0 +1,359 @@
+
+@if (courier.selectedModule == 'IN') {
+<div class="page-container"  >
+
+    <div class="page-header">
+        <div>
+            <h2>Courier Inward Register</h2>
+            <p>Courier / Parcel receiving record</p>
+        </div>
+        <div class="header-actions d-flex gap-1">
+            <button type="button" class="btn-reset" (click)="resetForm()">Reset</button>
+            <button type="button" class="btn-save" (click)="saveCourier()">
+                {{ isEdit ? 'Update Courier' : 'Save Courier' }}
+            </button>
+        </div>
+    </div>
+    <!-- Form -->
+    <div class="form-card" *ngIf="isExpanded">
+        <form #courierForm="ngForm">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Sr No.</label>
+                    <input type="text" name="srNo" [(ngModel)]="courier.srNo" placeholder="Auto" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" [(ngModel)]="courier.date" required />
+                </div>
+
+                <div class="form-group">
+                    <label>From *</label>
+                    <input type="text" name="from" [(ngModel)]="courier.from" placeholder="Sender / city" required />
+                </div>
+
+                <div class="form-group">
+                    <label>To *</label>
+                    <input type="text" name="to" [(ngModel)]="courier.to" placeholder="Receiver / location" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Qty *</label>
+                    <input type="number" name="qty" [(ngModel)]="courier.qty" min="1" required />
+                </div>
+
+                <div class="form-group">
+                    <label>In Time</label>
+                    <input type="time" name="inTime" [(ngModel)]="courier.inTime" />
+                </div>
+
+                <div class="form-group">
+                    <label>Courier Type *</label>
+                    <select name="courierType" [(ngModel)]="courier.courierType" required>
+                        <option value="" disabled>Select Type</option>
+                        <option *ngFor="let t of courierTypeOptions" [value]="t">{{ t }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Courier Agency Name *</label>
+                    <input type="text" name="agencyName" [(ngModel)]="courier.agencyName"
+                        placeholder="e.g. DTDC, BlueDart" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Docket No. *</label>
+                    <input type="text" name="docketNo" [(ngModel)]="courier.docketNo" placeholder="Enter docket number"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label>Receiver Name *</label>
+                    <input type="text" name="receiverName" [(ngModel)]="courier.receiverName"
+                        placeholder="Enter receiver name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Deptt. Name</label>
+                    <select name="department" [(ngModel)]="courier.department">
+                        <option value="" disabled>Select Department</option>
+                        <option *ngFor="let d of Department" [value]="d.code">{{ d.name }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Security Person Name *</label>
+                    <input type="text" name="securityPersonName" [(ngModel)]="courier.securityPersonName"
+                        placeholder="Enter security person name" required />
+                </div>
+
+                <div class="form-group span-2">
+                    <label>Remarks</label>
+                    <textarea name="remarks" [(ngModel)]="courier.remarks" rows="1"
+                        placeholder="Enter remarks"></textarea>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- Register table -->
+    <div class="table-card">
+
+        <div class="table-header">
+            <div class="header-left">
+                <div class="title-row">
+                    <h3>Courier Register</h3>
+                    <!-- Badges -->
+                    <span class="badge badge-total">Total: {{ filteredCouriers.length }}</span>
+                    <span class="badge badge-filtered" *ngIf="searchText">
+                        Filtered: {{ filteredCouriers.length }}
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <input type="text" [(ngModel)]="searchText" placeholder="Search docket / agency / receiver" />
+
+                <!-- Expand / Collapse icon -->
+                <button type="button" class="btn-icon" (click)="toggleExpand()"
+                    [title]="isExpanded ? 'Collapse table' : 'Expand table'">
+
+                    <svg *ngIf="!isExpanded" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                    <svg *ngIf="isExpanded" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SR NO</th>
+                        <th>DATE</th>
+                        <th>FROM</th>
+                        <th>TO</th>
+                        <th>QTY</th>
+                        <th>IN TIME</th>
+                        <th>COURIER TYPE</th>
+                        <th>AGENCY</th>
+                        <th>DOCKET NO</th>
+                        <th>RECEIVER</th>
+                        <th>DEPTT</th>
+                        <th>SECURITY</th>
+                        <th>REMARKS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of filteredCouriers">
+                        <td>{{ c.srNo }}</td>
+                        <td>{{ c.date | date:'dd-MM-yyyy' }}</td>
+                        <td>{{ c.from }}</td>
+                        <td>{{ c.to }}</td>
+                        <td>{{ c.qty }}</td>
+                        <td>{{ c.inTime }}</td>
+                        <td>{{ c.courierType }}</td>
+                        <td>{{ c.agencyName }}</td>
+                        <td>{{ c.docketNo }}</td>
+                        <td>{{ c.receiverName }}</td>
+                        <td>{{ c.department }}</td> 
+                        <td>{{ c.securityPersonName }}</td>
+                        <td>{{ c.remarks }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <button class="btn-small btn-Edit" (click)="editCourier(c)">Edit</button>
+                                <button class="btn-small btn-Delete" (click)="deleteCourier(c)">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredCouriers.length === 0">
+                        <td colspan="14" class="no-data">No courier records found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}
+@else {
+    <div class="page-container"  >
+
+    <div class="page-header">
+        <div>
+            <h2>Courier Outward Register</h2>
+            <p>Courier / Parcel receiving record</p>
+        </div>
+        <div class="header-actions d-flex gap-1">
+            <button type="button" class="btn-reset" (click)="resetForm()">Reset</button>
+            <button type="button" class="btn-save" (click)="saveCourier()">
+                {{ isEdit ? 'Update Courier' : 'Save Courier' }}
+            </button>
+        </div>
+    </div>
+    <!-- Form -->
+    <div class="form-card" *ngIf="isExpanded">
+        <form #courierForm="ngForm">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Sr No.</label>
+                    <input type="text" name="srNo" [(ngModel)]="courier.srNo" placeholder="Auto" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" [(ngModel)]="courier.date" required />
+                </div>
+
+                <div class="form-group">
+                    <label>From *</label>
+                    <input type="text" name="from" [(ngModel)]="courier.from" placeholder="Sender / city" required />
+                </div>
+
+                <div class="form-group">
+                    <label>To *</label>
+                    <input type="text" name="to" [(ngModel)]="courier.to" placeholder="Receiver / location" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Qty *</label>
+                    <input type="number" name="qty" [(ngModel)]="courier.qty" min="1" required />
+                </div>
+                <div class="form-group">
+                    <label>Out Time</label>
+                    <input type="time" name="outTime" [(ngModel)]="courier.outTime" />
+                </div>
+                <div class="form-group">
+                    <label>Material Details</label>
+                    <input type="text" name="materialDetails" [(ngModel)]="courier.materialDetails" placeholder="Enter material" />
+                </div>
+
+                <div class="form-group">
+                    <label>Courier Agency Name *</label>
+                    <input type="text" name="agencyName" [(ngModel)]="courier.agencyName"
+                        placeholder="e.g. DTDC, BlueDart" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Docket No. *</label>
+                    <input type="text" name="docketNo" [(ngModel)]="courier.docketNo" placeholder="Enter docket number"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label>Sender Name *</label>
+                    <input type="text" name="sendername" [(ngModel)]="courier.sendername"
+                        placeholder="Enter sender name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Deptt. Name</label>
+                    <select name="department" [(ngModel)]="courier.department">
+                        <option value="" disabled>Select Department</option>
+                        <option *ngFor="let d of Department" [value]="d.code">{{ d.name }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Approve By *</label>
+                    <input type="text" name="securityPersonName" [(ngModel)]="courier.approveBy"
+                        placeholder="Approve By" required />
+                </div>
+                <div class="form-group span-2">
+                    <label>Remarks</label>
+                    <textarea name="remarks" [(ngModel)]="courier.remarks" rows="1"
+                        placeholder="Enter remarks"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Register table -->
+    <div class="table-card">
+        <div class="table-header">
+            <div class="header-left">
+                <div class="title-row">
+                    <h3>Courier Register</h3>
+                    <!-- Badges -->
+                    <span class="badge badge-total">Total: {{ filteredCouriers.length }}</span>
+                    <span class="badge badge-filtered" *ngIf="searchText">
+                        Filtered: {{ filteredCouriers.length }}
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <input type="text" [(ngModel)]="searchText" placeholder="Search docket / agency / receiver" />
+
+                <!-- Expand / Collapse icon -->
+                <button type="button" class="btn-icon" (click)="toggleExpand()"
+                    [title]="isExpanded ? 'Collapse table' : 'Expand table'">
+
+                    <svg *ngIf="!isExpanded" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                    <svg *ngIf="isExpanded" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SR NO</th>
+                        <th>DATE</th>
+                        <th>FROM</th>
+                        <th>TO</th>
+                        <th>QTY</th>
+                        <th>OUT TIME</th>
+                        <th>MATERIAL</th>
+                        <th>AGENCY</th>
+                        <th>DOCKET NO</th>
+                        <th>SENDER</th>
+                        <th>DEPTT</th>
+                        <th>SECURITY</th>
+                        <th>REMARKS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of filteredCouriers">
+                        <td>{{ c.srNo }}</td>
+                        <td>{{ c.date | date:'dd-MM-yyyy' }}</td>
+                        <td>{{ c.from }}</td>
+                        <td>{{ c.to }}</td>
+                        <td>{{ c.qty }}</td>
+                        <td>{{ c.outTime }}</td>
+                        <td>{{ c.materialDetails }}</td>
+                        <td>{{ c.agencyName }}</td>
+                        <td>{{ c.docketNo }}</td>
+                        <td>{{ c.sendername }}</td>
+                        <td>{{ c.department }}</td> 
+                        <td>{{ c.securityPersonName }}</td>
+                        <td>{{ c.remarks }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <button class="btn-small btn-Edit" (click)="editCourier(c)">Edit</button>
+                                <button class="btn-small btn-Delete" (click)="deleteCourier(c)">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredCouriers.length === 0">
+                        <td colspan="14" class="no-data">No courier records found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}
+

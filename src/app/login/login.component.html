@@ -1,50 +1,102 @@
-<div class="login-container">
+<div class="login-page">
 
-  <div class="login-card">
+  <!-- Left Branding Panel -->
+  <div class="login-brand">
+    <div class="brand-overlay"></div>
 
-    <div class="login-logo">
-      <div class="logo-icon">G</div>
-      <h2>GATE MANAGEMENT</h2>
-      <p>Management System</p>
-    </div>
-
-    <div class="login-heading">
-      <h3>Welcome Back!</h3>
-      <p>Please login to your account</p>
-    </div>
-
-    <form (ngSubmit)="login()">
-
-      <div class="form-group">
-        <label>Username</label>
-        <input
-          type="text"
-          name="username"
-          [(ngModel)]="username"
-          placeholder="Enter username"
-          required>
+    <div class="brand-content">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 21V8l9-5 9 5v13" />
+          <path d="M9 21V12h6v9" />
+        </svg>
+        <span>GATE MANAGEMENT</span>
       </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          placeholder="Enter password"
-          required>
+      <h1>Secure Access.<br>Every Entry Tracked.</h1>
+      <p>Manage visitors, employees, material and courier movement from a single, secure portal.</p>
+
+      <div class="brand-stats">
+        <div class="stat">
+          <strong>24/7</strong>
+          <span>Monitoring</span>
+        </div>
+        <div class="stat">
+          <strong>100%</strong>
+          <span>Logged Entries</span>
+        </div>
+        <div class="stat">
+          <strong>Secure</strong>
+          <span>Role-based Access</span>
+        </div>
       </div>
-
-      <button type="submit" class="login-btn">
-        Login
-      </button>
-
-    </form>
-
-    <div class="login-footer">
-      © 2026 Gate Management System
     </div>
 
+    <!-- Decorative barrier graphic -->
+    <svg class="brand-graphic" viewBox="0 0 400 200" fill="none">
+      <rect x="0" y="90" width="400" height="10" fill="#e8a33d" opacity="0.15" transform="rotate(-3 200 95)"/>
+      <circle cx="340" cy="40" r="60" fill="#e8a33d" opacity="0.08"/>
+      <circle cx="40" cy="160" r="80" fill="#e8a33d" opacity="0.06"/>
+    </svg>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="login-form-panel">
+    <div class="login-card">
+
+      <div class="login-heading">
+        <h3>Welcome back</h3>
+        <p>Enter your credentials to access the portal</p>
+      </div>
+
+      <form (ngSubmit)="login()">
+
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" />
+            </svg>
+            <input
+              type="text"
+              name="username"
+              [(ngModel)]="username"
+              placeholder="Enter username"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+            <input
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Enter password"
+              required>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn">
+          Login
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+
+      </form>
+
+      <div class="login-footer">
+        © 2026 Gate Management System
+      </div>
+    </div>
   </div>
 
 </div>

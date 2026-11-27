@@ -1,114 +1,134 @@
-/* Main Page */
+/* ================= Main Page ================= */
 
 .page-container {
-  padding: 22px;
-  background: #f4f6f9;
+  padding: 18px;
+  background: #f5f7fb;
   min-height: 100vh;
-  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 .page-header {
-  margin-bottom: 20px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #183b63;
-  font-size: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .page-header p {
-  color: #777;
+  color:grey;
   margin: 5px 0 0;
+  font-size: 13px;
 }
-
-/* Form Card */
+.page-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 24px;
+}
+/* ================= Form Card ================= */
 
 .form-card,
 .table-card {
   background: #fff;
-  padding: 22px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-  margin-bottom: 22px;
+  padding: 14px 16px;
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  margin-bottom: 16px;
 }
 
 .company-heading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding-bottom: 18px;
+  gap: 14px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #183b63;
   text-align: center;
 }
 
 .company-logo {
-  width: 100px;
-  height: 75px;
+  width: 70px;
+  height: 52px;
   object-fit: contain;
 }
 
 .company-info h2 {
   color: #183b63;
-  margin: 0 0 5px;
-  font-size: 21px;
+  margin: 0 0 3px;
+  font-size: 18px;
 }
 
 .company-info p {
-  margin: 3px 0;
+  margin: 2px 0;
   color: #444;
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .company-info h3 {
-  margin: 8px 0 0;
+  margin: 5px 0 0;
   color: #183b63;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .form-title {
   text-align: center;
   color: #183b63;
-  margin: 20px 0;
+  margin: 10px 0 12px;
+  font-size: 16px;
 }
 
-/* Form Fields */
+/* ================= Form Fields ================= */
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 17px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 24px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 3px;
   min-width: 0;
 }
 
 .form-group label {
   font-weight: 600;
   color: #333;
-  font-size: 13px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
 }
 
 .form-group small {
   color: #777;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 10px 12px;
+  height: 40px;
+  padding: 3px 8px;
   border: 1px solid #d2d8e0;
-  border-radius: 5px;
+  border-radius: 6px;
   outline: none;
-  font-size: 14px;
+  font-size: 13px;
   box-sizing: border-box;
+  background: #fff;
+}
+
+.form-group textarea {
+  height: 30px;
+  min-height: 30px;
+  padding-top: 5px;
+  resize: vertical;
+}
+
+.form-group input[type="file"] {
+  height: auto;
+  padding: 3px 4px;
+  font-size: 11.5px;
 }
 
 .form-group input:focus,
@@ -127,43 +147,51 @@
   grid-column: 1 / -1;
 }
 
-.photo-preview img {
-  width: 110px;
-  height: 110px;
-  object-fit: cover;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.span-2 {
+  grid-column: span 2;
 }
 
-/* Buttons */
+.photo-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ================= Buttons ================= */
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 22px;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eef0f2;
 }
 
 .btn-save,
 .btn-reset,
 .btn-small,
+.btn-Edit,
 .btn-close {
   border: none;
-  padding: 10px 18px;
-  border-radius: 5px;
+  padding: 7px 14px;
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 12.5px;
 }
 
 .btn-save {
-  background: #183b63;
-  color: white;
+  background: #166534;
+  color: #bbf7d0;
+  border: 1px solid #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
 }
-
 .btn-save:hover {
   background: #245783;
 }
-
 .btn-save:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -179,7 +207,7 @@
   color: #333;
 }
 
-/* Generated Pass Preview */
+/* ================= Generated Pass Preview ================= */
 
 .pass-preview-section {
   background: #eef2f6;
@@ -208,10 +236,7 @@
   font-size: 12px;
 }
 
-/*
-  2:3 ratio represents the 100 x 150 mm printed pass.
-  Preview is scaled down on screen.
-*/
+/* 2:3 ratio = 100 x 150 mm printed pass */
 
 .pass-sheet {
   width: 380px;
@@ -497,7 +522,7 @@
   margin-top: 18px;
 }
 
-/* Visitor Register */
+/* ================= Visitor Register ================= */
 
 .table-header {
   display: flex;
@@ -540,7 +565,8 @@ td {
   padding: 12px 10px;
   border-bottom: 1px solid #e5e5e5;
   text-align: left;
-  font-size: 13px;
+  font-size: 15px;
+  color:black;
 }
 
 th {
@@ -563,14 +589,22 @@ tbody tr:hover {
 .btn-out {
   background: #198754;
 }
-
+.btn-Edit{
+   background: yellowgreen;
+}
 .no-data {
   text-align: center;
   padding: 20px;
   color: #777;
 }
 
-/* Responsive Layout */
+/* ================= Responsive Layout ================= */
+
+@media (max-width: 1100px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 @media (max-width: 768px) {
   .page-container {
@@ -581,7 +615,8 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
-  .full-width {
+  .full-width,
+  .span-2 {
     grid-column: auto;
   }
 

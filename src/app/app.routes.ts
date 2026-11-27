@@ -7,6 +7,7 @@ import { EmployeeMovementComponent } from './employee-movement/employee-movement
 import { MaterialInwardComponent } from './material-inward/material-inward.component';
 import { MaterialOutwardComponent } from './material-outward/material-outward.component';
 import { VisitorGateEntryComponent } from './visitor-gate-entry/visitor-gate-entry.component';
+import { InwardCourierComponent } from './inward-courier/inward-courier.component';
 
 export const routes: Routes = [
  { path: '', component: LoginComponent },
@@ -18,7 +19,9 @@ export const routes: Routes = [
             { path: 'empMovmnt', component: EmployeeMovementComponent },
             { path: 'materialInward', component: MaterialInwardComponent },
             { path: 'materialOutward', component: MaterialOutwardComponent },
-            { path: 'visitorGateEntry', component: VisitorGateEntryComponent }
+            { path: 'visitorGateEntry', component: VisitorGateEntryComponent },
+            { path: 'inward-courier', component: InwardCourierComponent },
+            { path: 'outward-courier', component: InwardCourierComponent }
         ]
     }
 ];

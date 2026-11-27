@@ -1,6 +1,13 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { EmployeeService } from '../services/Employee/employee.service';
 
 interface EmployeeMovement {
   srNo: number;
@@ -8,6 +15,7 @@ interface EmployeeMovement {
   empIdNo: string;
   contractName: string;
   name: string;
+  empName?: string;
   department: string;
   approvedByHod: string;
   approvedByHr: string;
@@ -22,26 +30,70 @@ interface EmployeeMovement {
 @Component({
   selector: 'app-employee-movement',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, FormsModule, ReactiveFormsModule,
+    MatAutocompleteModule, MatFormFieldModule, MatInputModule
+  ],
   templateUrl: './employee-movement.component.html',
   styleUrls: ['./employee-movement.component.css']
 })
 export class EmployeeMovementComponent {
-
   private readonly storageKey = 'employeeMovementRecords';
 
+  empSearch = '';
+  showEmpDropdown = false;
+  filteredEmployees: any[] = [];
+  private EmployeeSer = inject(EmployeeService);
   movement: EmployeeMovement = this.getEmptyMovement();
-
   movementList: EmployeeMovement[] = [];
-
+  Department: any = [];
+  employees: any[] = [];
+  empMovList: any[] = [];
   searchText = '';
-
   empTypeOptions = ['STAFF', 'CONTRACT'];
-
   purposeOptions = ['OFFICIAL', 'PERSONAL'];
 
   constructor() {
     this.loadMovements();
+  }
+  ngOnInit(): void {
+    this.GetEmployee();
+  }
+  GetEmployee() {
+    this.EmployeeSer.GetEmployeeMov(this.movement.empType).subscribe(
+      (data: any) => {
+        this.filteredEmployees = data.empList;
+        this.employees = data.empList;
+        this.Department = data.departments;
+        this.empMovList = data.empMovList;
+      },
+      (error: any) => {
+        console.error('Error fetching suppliers:', error);
+      }
+    );
+  }
+  // SEARCH
+  filterEmp(value: string): void {
+    this.empSearch = value;
+    const search = value.toLowerCase().trim();
+    this.filteredEmployees = this.employees.filter(e =>
+      e.employeeCode.toLowerCase().includes(search) ||
+      e.employeeName.toLowerCase().includes(search)
+    );
+    this.showEmpDropdown = true;
+  }
+  // OPEN DROPDOWN
+  openEmpDropdown(): void {
+    this.filteredEmployees = [...this.employees];
+    this.showEmpDropdown = true;
+  }
+  // SELECT EMPLOYEE
+  selectEmployee(e: any): void {
+    this.movement.empIdNo = e.employeeCode;
+    this.movement.name = e.employeeName;
+    this.movement.department = e.dept;
+    this.empSearch = e.employeeCode;
+    this.showEmpDropdown = false;
   }
 
   getEmptyMovement(): EmployeeMovement {
@@ -79,15 +131,13 @@ export class EmployeeMovementComponent {
       JSON.stringify(this.movementList)
     );
   }
-
   get filteredMovements(): EmployeeMovement[] {
     const search = this.searchText.trim().toLowerCase();
 
     if (!search) {
-      return this.movementList;
+      return this.empMovList;
     }
-
-    return this.movementList.filter(item =>
+    return this.empMovList.filter(item =>
       String(item.srNo).includes(search) ||
       item.empIdNo.toLowerCase().includes(search) ||
       item.name.toLowerCase().includes(search) ||
@@ -96,7 +146,6 @@ export class EmployeeMovementComponent {
       item.destination.toLowerCase().includes(search)
     );
   }
-
   saveMovement(): void {
     if (
       !this.movement.empIdNo.trim() ||
@@ -108,47 +157,52 @@ export class EmployeeMovementComponent {
       alert(
         'Please fill Employee ID, Employee Name, From Plant, Destination and Security Supervisor Name.'
       );
-      return;
     }
 
-    if (
-      this.movement.empType === 'CONTRACT' &&
-      !this.movement.contractName.trim()
-    ) {
-      alert('Please enter Contract Name.');
-      return;
+    const fintdep = this.Department.find((x: any) => x.code == this.movement.department);
+    if (fintdep) {
+      this.movement.department = fintdep.name;
     }
+    this.EmployeeSer.SaveEmpMov(this.movement).subscribe(
+      (data: any) => {
+        alert('saved successfully.');
+        window.location.reload();
+      },
+      (error: any) => {
+        console.error('Error saving Gate In:', error);
+        const msg =
+          error?.error?.message ||
+          (typeof error?.error === 'string' ? error.error : null) ||
+          error?.message ||
+          'Unknown error';
 
-    const nextSrNo =
-      this.movementList.length > 0
-        ? Math.max(...this.movementList.map(item => item.srNo || 0)) + 1
-        : 1;
-
-    const newMovement: EmployeeMovement = {
-      ...this.movement,
-      srNo: nextSrNo,
-      outTime: this.movement.outTime ||
-        new Date().toTimeString().substring(0, 5)
-    };
-
-    this.movementList.unshift(newMovement);
-
-    try {
-      this.saveToStorage();
-    } catch {
-      this.movementList.shift();
-      alert('Unable to save movement record in browser storage.');
-      return;
-    }
-
-    alert('Employee movement saved successfully.');
-
+        alert('Error saving Gate In: ' + msg);
+      }
+    )
     this.resetForm();
   }
 
-  markOut(item: EmployeeMovement): void {
-    item.outTime = new Date().toTimeString().substring(0, 5);
-    item.inTime = '';
+  markOut(item: any, type: any): void {
+    if (type == 'OUT') {
+      item.outTime = new Date().toTimeString().substring(0, 5);
+      item.inTime = '';
+    }
+    else {
+      item.inTime = new Date().toTimeString().substring(0, 5);
+    }
+    this.EmployeeSer.markOut_In(type, item.srNo).subscribe(
+      (data: any) => {
+      },
+      (error: any) => {
+        console.error('Error saving Gate In:', error);
+        const msg =
+          error?.error?.message ||
+          (typeof error?.error === 'string' ? error.error : null) ||
+          error?.message ||
+          'Unknown error';
+        alert('Error saving Gate In: ' + msg);
+      }
+    )
 
     this.saveToStorage();
   }
@@ -163,24 +217,38 @@ export class EmployeeMovementComponent {
 
     this.saveToStorage();
   }
-
   resetForm(): void {
     this.movement = this.getEmptyMovement();
   }
-
   deleteMovement(item: EmployeeMovement): void {
     const confirmDelete = confirm(
       `Are you sure you want to delete movement record ${item.srNo}?`
     );
-
     if (!confirmDelete) {
       return;
     }
+    this.EmployeeSer.DelteteMov(item.srNo).subscribe(
+      (data: any) => {
+        window.location.reload();
+      },
+      (error: any) => {
+        console.error('Error saving Gate In:', error);
+        const msg =
+          error?.error?.message ||
+          (typeof error?.error === 'string' ? error.error : null) ||
+          error?.message ||
+          'Unknown error';
+        alert('Error saving Gate In: ' + msg);
+      }
+    )
 
-    this.movementList = this.movementList.filter(
-      record => record !== item
-    );
+
 
     this.saveToStorage();
   }
+  isExpanded = true;
+
+toggleExpand() {
+  this.isExpanded = !this.isExpanded;
+}
 }
